@@ -7,6 +7,7 @@ import com.bridgelabz.employee_payroll.model.EmployeePayrollData;
 import com.bridgelabz.employee_payroll.service.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class EmployeePayrollController {
     @Autowired
     private IEmployeeService employeeService;
 
-    @RequestMapping(value = {"", "/", "/get"})
+    @RequestMapping(value = {"", "/", "/get"}, method = RequestMethod.GET)
     public ResponseEntity<ResponseDTO> getEmployeeData(){
         List<EmployeePayrollData> employeeList = null;
         employeeList = employeeService.getEmployee();
@@ -36,7 +37,7 @@ public class EmployeePayrollController {
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseDTO> createEmployeeData(@RequestBody EmployeePayrollDTO employeePayrollDTO){
         EmployeePayrollData emp = null;
         emp = employeeService.createEmployee(employeePayrollDTO);
@@ -45,9 +46,8 @@ public class EmployeePayrollController {
     }
 
     @PutMapping("/update/{empId}")
-    public ResponseEntity<ResponseDTO> updateEmployeeData(@RequestBody EmployeePayrollDTO employeePayrollDTO, @PathVariable Long empId){
-        EmployeePayrollData emp = null;
-        emp = employeeService.updateEmployee(empId, employeePayrollDTO);
+    public ResponseEntity<ResponseDTO> updateEmployeeData(@PathVariable("empId") Long id, @RequestBody EmployeePayrollDTO employeePayrollDTO){
+        EmployeePayrollData emp = employeeService.updateEmployee(id, employeePayrollDTO);
         ResponseDTO responseDTO = new ResponseDTO("Updated Employee Payroll Data successfully",emp);
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
